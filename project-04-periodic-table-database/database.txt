@@ -1,0 +1,88 @@
+# 1 - rename weight column to atomic_mass
+ALTER TABLE properties RENAME COLUMN weight TO atomic_mass;
+
+
+# 2 - rename melting_point to melting_point_celsius
+ALTER TABLE properties RENAME COLUMN melting_point TO melting_point_celsius;
+
+
+# 3 - rename boiling_point to boiling_point_celsius
+ALTER TABLE properties RENAME COLUMN boiling_point TO boiling_point_celsius;
+
+
+# 4 - add not null to melting_point_celsius and boiling_point_celsius
+ALTER TABLE properties 
+ALTER COLUMN melting_point_celsius SET NOT NULL,
+ALTER COLUMN boiling_point_celsius SET NOT NULL;
+
+
+# 5 - add unique constraint to symbol and name column and set them to not null
+ALTER TABLE elements 
+ALTER COLUMN symbol SET NOT NULL,
+ALTER COLUMN name SET NOT NULL,
+ADD CONSTRAINT unique_symbol UNIQUE (symbol),
+ADD CONSTRAINT unique_name UNIQUE (name);
+
+
+# 6 - add foreign key to atmoic_number column from properties
+ALTER TABLE properties ADD FOREIGN KEY (atomic_number) REFERENCES elements(atomic_number);
+
+
+# 7 - creating types table
+CREATE TABLE types(
+  type_id SERIAL PRIMARY KEY,
+  type varchar(30) NOT NULL
+);
+
+
+# 8 - inserting types to types table
+INSERT INTO types (type) VALUES ('metal'), ('nonmetal'), ('metalloid');
+
+
+# 9 - add column type_id to properties
+ALTER TABLE properties ADD COLUMN type_id INT;
+
+
+# 10 - update type_id values
+UPDATE properties
+SET type_id = CASE
+  WHEN type = 'metal' THEN 1
+  WHEN type = 'nonmetal' THEN 2
+  WHEN type = 'metalloid' THEN 3
+  ELSE type_id
+END;
+
+
+# 11 - add not null and foreign key constraint to type_id
+ALTER TABLE properties ALTER COLUMN type_id SET NOT NULL, ADD FOREIGN KEY (type_id) REFERENCES types(type_id);
+
+
+# 12 - capitalize symbol columns first letter
+UPDATE elements SET symbol = initcap(symbol);
+
+
+# 13 - remove right trailing zeros from atmoic_mass column
+ALTER TABLE properties ALTER COLUMN atomic_mass TYPE VARCHAR(30);
+UPDATE properties SET atomic_mass = RTRIM(atomic_mass, '0');
+ALTER TABLE properties ALTER COLUMN atomic_mass TYPE DECIMAL USING atomic_mass::NUMERIC;
+
+
+# 14 - insert atomic_number 9 and 10 to elements
+INSERT INTO elements (atomic_number, symbol, name) VALUES (9, 'F', 'Fluorine'), (10, 'Ne', 'Neon');
+
+
+# 15 - insert atomic_number 9 and 10 to properties
+INSERT INTO properties 
+(atomic_number, atomic_mass, type, melting_point_celsius, boiling_point_celsius, type_id)
+VALUES
+(9, 18.998, 'nonmetal', -220, -188.1, 2),
+(10, 20.18, 'nonmetal', -248.6, -246.1 , 2);
+
+
+# 16 - delete atmoic_number 1000 from properties and elements table
+DELETE FROM properties WHERE atomic_number = 1000;
+DELETE FROM elements WHERE atomic_number = 1000;
+
+
+# 17 - drop type column from properties
+ALTER TABLE properties DROP COLUMN type;

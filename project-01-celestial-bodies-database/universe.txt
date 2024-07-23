@@ -1,0 +1,161 @@
+\l
+
+CREATE DATABASE universe;
+
+\c universe;
+
+CREATE TABLE galaxy(
+    galaxy_id SERIAL PRIMARY KEY, 
+    name VARCHAR(30) NOT NULL UNIQUE,
+    description TEXT,
+    diameter_in_light_years INT NOT NULL,
+    has_stars BOOLEAN NOT NULL,
+    estimated_age_in_millions_of_years INT NOT NULL
+);
+
+CREATE TABLE star(
+    star_id SERIAL PRIMARY KEY, 
+    name VARCHAR(30) NOT NULL UNIQUE,
+    description TEXT,
+    has_planets BOOLEAN NOT NULL,
+    no_of_planets INT NOT NULL,
+    solar_mass NUMERIC(20, 4),
+    galaxy_id INT NOT NULL,
+    FOREIGN KEY (galaxy_id) REFERENCES galaxy(galaxy_id)
+);
+
+CREATE TABLE planet(
+    planet_id SERIAL PRIMARY KEY, 
+    name VARCHAR(30) NOT NULL UNIQUE,
+    description TEXT,
+    has_moons BOOLEAN NOT NULL,
+    no_of_moons INT NOT NULL,
+    estimated_radius_km NUMERIC(20, 4),
+    star_id INT NOT NULL,
+    FOREIGN KEY (star_id) REFERENCES star(star_id)
+);
+
+CREATE TABLE moon(
+    moon_id SERIAL PRIMARY KEY, 
+    name VARCHAR(30) NOT NULL UNIQUE,
+    description TEXT,
+    estimated_radius_km NUMERIC(20, 4) NOT NULL,
+    distance_from_planet_km NUMERIC(20, 4) NOT NULL,
+    planet_id INT NOT NULL,
+    FOREIGN KEY (planet_id) REFERENCES planet(planet_id)
+);
+
+CREATE TABLE discovery (
+    discovery_id SERIAL PRIMARY KEY,
+    name VARCHAR(30) NOT NULL UNIQUE,
+    discovered_object_type VARCHAR(10) NOT NULL CHECK (discovered_object_type IN ('galaxy', 'star', 'planet', 'moon')),
+    discovered_object_id INT NOT NULL,
+    discovery_date DATE NOT NULL,
+    discovery_details TEXT
+);
+
+INSERT INTO galaxy (name, description, diameter_in_light_years, has_stars, estimated_age_in_millions_of_years)
+VALUES
+    ('Galaxy-1', 'Description of Galaxy-1', 100000, TRUE, 1000),
+    ('Galaxy-2', 'Description of Galaxy-2', 200000, TRUE, 2000),
+    ('Galaxy-3', 'Description of Galaxy-3', 300000, TRUE, 3000),
+    ('Galaxy-4', 'Description of Galaxy-4', 400000, TRUE, 4000),
+    ('Galaxy-5', 'Description of Galaxy-5', 500000, TRUE, 5000),
+    ('Galaxy-6', 'Description of Galaxy-6', 600000, TRUE, 6000)
+;
+
+INSERT INTO star (name, description, has_planets, no_of_planets, solar_mass, galaxy_id)
+VALUES
+    ('Star-1', 'Description of Star-1', TRUE, 10, 100.12, 1),
+    ('Star-2', 'Description of Star-2', TRUE, 20, 200.12, 2),
+    ('Star-3', 'Description of Star-3', TRUE, 30, 300.12, 3),
+    ('Star-4', 'Description of Star-4', TRUE, 40, 400.12, 4),
+    ('Star-5', 'Description of Star-5', TRUE, 50, 500.12, 5),
+    ('Star-6', 'Description of Star-6', TRUE, 60, 600.12, 6)
+;
+
+INSERT INTO planet (name, description, has_moons, no_of_moons, estimated_radius_km, star_id)
+VALUES
+    ('Planet-01', 'Description of Planet-01', TRUE, 1, 1000.12, 1),
+    ('Planet-02', 'Description of Planet-02', TRUE, 2, 2000.12, 1),
+    ('Planet-03', 'Description of Planet-03', TRUE, 3, 3000.12, 2),
+    ('Planet-04', 'Description of Planet-04', TRUE, 4, 4000.12, 2),
+    ('Planet-05', 'Description of Planet-05', TRUE, 5, 5000.12, 3),
+    ('Planet-06', 'Description of Planet-06', TRUE, 6, 6000.12, 3),
+    ('Planet-07', 'Description of Planet-07', TRUE, 7, 7000.12, 4),
+    ('Planet-08', 'Description of Planet-08', TRUE, 8, 8000.12, 4),
+    ('Planet-09', 'Description of Planet-09', TRUE, 9, 9000.12, 5),
+    ('Planet-10', 'Description of Planet-10', TRUE, 10, 10000.12, 5),
+    ('Planet-11', 'Description of Planet-11', TRUE, 11, 11000.12, 6),
+    ('Planet-12', 'Description of Planet-12', TRUE, 12, 12000.12, 6)
+;
+
+INSERT INTO moon (name, description, estimated_radius_km, distance_from_planet_km, planet_id)
+VALUES
+    ('Moon-01', 'Description for Moon-01', 1000.12, 10000.12, 1),
+    ('Moon-02', 'Description for Moon-02', 2000.12, 20000.12, 1),
+    ('Moon-03', 'Description for Moon-03', 3000.12, 30000.12, 2),
+    ('Moon-04', 'Description for Moon-04', 4000.12, 40000.12, 2),
+    ('Moon-05', 'Description for Moon-05', 5000.12, 50000.12, 3),
+    ('Moon-06', 'Description for Moon-06', 6000.12, 60000.12, 3),
+    ('Moon-07', 'Description for Moon-07', 7000.12, 70000.12, 4),
+    ('Moon-08', 'Description for Moon-08', 8000.12, 80000.12, 4),
+    ('Moon-09', 'Description for Moon-09', 9000.12, 90000.12, 5),
+    ('Moon-10', 'Description for Moon-10', 10000.12, 100000.12, 5),
+    ('Moon-11', 'Description for Moon-11', 11000.12, 110000.12, 6),
+    ('Moon-12', 'Description for Moon-12', 12000.12, 120000.12, 6),
+    ('Moon-13', 'Description for Moon-13', 13000.12, 130000.12, 7),
+    ('Moon-14', 'Description for Moon-14', 14000.12, 140000.12, 7),
+    ('Moon-15', 'Description for Moon-15', 15000.12, 150000.12, 8),
+    ('Moon-16', 'Description for Moon-16', 16000.12, 160000.12, 8),
+    ('Moon-17', 'Description for Moon-17', 17000.12, 170000.12, 9),
+    ('Moon-18', 'Description for Moon-18', 18000.12, 180000.12, 9),
+    ('Moon-19', 'Description for Moon-19', 19000.12, 190000.12, 10),
+    ('Moon-20', 'Description for Moon-20', 20000.12, 200000.12, 10),
+    ('Moon-21', 'Description for Moon-21', 21000.12, 210000.12, 11),
+    ('Moon-22', 'Description for Moon-22', 22000.12, 220000.12, 11),
+    ('Moon-23', 'Description for Moon-23', 23000.12, 230000.12, 12),
+    ('Moon-24', 'Description for Moon-24', 24000.12, 240000.12, 12)
+;
+
+INSERT INTO discovery (name, discovered_object_type, discovered_object_id, discovery_date, discovery_details)
+VALUES
+    ('Galaxy-01', 'galaxy', 1, '1810-01-01', 'Details About Discovery 1'),
+    ('Galaxy-02', 'galaxy', 2, '1820-02-02', 'Details About Discovery 2'),
+    ('Galaxy-03', 'galaxy', 3, '1830-03-03', 'Details About Discovery 3'),
+    ('Galaxy-04', 'galaxy', 4, '1840-04-04', 'Details About Discovery 4'),
+    ('Star-01', 'star', 1, '1810-01-01', 'Details About Discovery 5'),
+    ('Star-02', 'star', 2, '1820-02-02', 'Details About Discovery 6'),
+    ('Star-03', 'star', 3, '1830-03-03', 'Details About Discovery 7'),
+    ('Star-04', 'star', 4, '1840-04-04', 'Details About Discovery 8'),
+    ('Planet-01', 'planet', 1, '1810-01-01', 'Details About Discovery 9'),
+    ('Planet-02', 'planet', 2, '1820-02-02', 'Details About Discovery 10'),
+    ('Planet-03', 'planet', 3, '1830-03-03', 'Details About Discovery 11'),
+    ('Planet-04', 'planet', 4, '1840-04-04', 'Details About Discovery 12'),
+    ('Moon-01', 'moon', 1, '1810-01-01', 'Details About Discovery 13'),
+    ('Moon-02', 'moon', 2, '1820-02-02', 'Details About Discovery 14'),
+    ('Moon-03', 'moon', 3, '1830-03-03', 'Details About Discovery 15'),
+    ('Moon-04', 'moon', 4, '1840-04-04', 'Details About Discovery 16')
+;
+
+\d
+
+\d galaxy
+
+\d star
+
+\d planet
+
+\d moon
+
+\d discovery
+
+SELECT * FROM galaxy;
+
+SELECT * FROM star;
+
+SELECT * FROM planet;
+
+SELECT * FROM moon;
+
+SELECT * FROM discovery;
